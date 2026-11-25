@@ -1099,7 +1099,7 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 .custom-cursor input,.custom-cursor textarea{cursor:text!important}
 /* 20.11. (Israa): Case-Karte ganz klickbar; der Stern-Cursor zeigt auf der Karte „Case ansehen“, dafür entfällt der Link-Text (bleibt für Tastatur und Screenreader erhalten, auf Touch sichtbar) */
 .cb-card{cursor:pointer}
-.custom-cursor .cb-txt .case-link:not(:focus-visible){position:absolute;width:1px;height:1px;margin:0;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* 25.11. (Israa): „Case ansehen“ ist immer sichtbar (wer nur scrollt, sieht das Cursor-Label nie), der Cursor zeigt es zusätzlich */
 .cur-star .cur-lbl{position:absolute;left:50%;top:50%;z-index:-1;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1px rgba(130,37,56,.12),0 16px 36px -16px rgba(51,11,4,.4);opacity:0;transform:scale(.3);transition:opacity 180ms var(--ease-out),transform 460ms cubic-bezier(.34,1.56,.64,1)}
 .cur-star .cur-lbl svg{display:block;width:100%;height:100%;overflow:visible;animation:curSpin 10s linear infinite}
 .cur-star .cur-lbl text{fill:var(--merlot);font:500 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase}
@@ -1883,6 +1883,10 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 /* 21.11.: eigenes 4:3-Teaser-Visual für Kämpfe (Israa) */
 .cb-vis:has(img[src*="kf-teaser"]){background:#f7d45e}
 .cb-mks{position:absolute;inset:0;pointer-events:none}
+/* 25.11. (Israa): kleine Überschrift „Cases“, damit die Bühne nicht allein steht */
+.cb-head{position:absolute;z-index:2;top:32px;left:max(clamp(16px,5.5vw,96px),calc((100% - 1840px) / 2));margin:0;color:var(--braun);line-height:44px}
+.cbs:not(.h) .cb-head{display:none}
+@media (max-width:820px){.cbs.h .cb-head{position:static;display:block;padding:32px 16px 0;background:var(--beige)}}
 /* 20.11. (Israa): Case-Karten auf Desktop: Text links, Cover-Bild rechts im Querformat 4:3 (nicht quadratisch); weniger Außenrand (max. 96 px), mehr Innenabstand beim Text, wächst auf großen Bildschirmen bis 1840 mit */
 @media (min-width:821px){
   .cb-slide{padding-left:clamp(16px,5.5vw,96px);padding-right:clamp(16px,5.5vw,96px)}
@@ -2124,6 +2128,7 @@ figure>.cap,.vis .cap,.sc .cap{margin-top:0}
     <!-- Case-Bühne (Israa 16.11.): Startseite horizontal mit Einrasten, Cases-Seite klont sie vertikal -->
     <div class="cb-stage">
       <div class="cb-bgs" aria-hidden="true"><div class="cb-bg c-daad"></div><div class="cb-bg c-ody"></div><div class="cb-bg c-kf"></div><div class="cb-bg c-djv"></div></div>
+      <h2 class="label cb-head">Cases</h2>
       <nav class="cb-stars" aria-label="Projekte"></nav>
       <div class="cb-track">
       <article class="cb-slide c-daad" aria-label="DAAD Study Guide">
@@ -3572,7 +3577,8 @@ function autoStep() {
 function stopAuto() { if (!auto) return; auto = false; clearTimeout(autoT); }
 autoT = setTimeout(autoStep, 300);
 kwbs.forEach(b => {
-  b.addEventListener('mouseenter', () => { stopAuto(); if (!pinned) showNote(b); });
+  /* 25.11. (Israa): nur echte Mausbewegung zählt. Liegt der Zeiger beim Laden schon auf einem Wort, bleibt es aus, bis man die Maus bewegt */
+  b.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' || (!e.movementX && !e.movementY) || b.classList.contains('active')) return; stopAuto(); if (!pinned) showNote(b); });
   b.addEventListener('mouseleave', () => { if (!pinned && !auto) showNote(null); });
   b.addEventListener('focus', () => { stopAuto(); showNote(b); });
   b.addEventListener('blur', () => { if (!pinned) showNote(null); });
