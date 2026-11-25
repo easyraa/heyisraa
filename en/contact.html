@@ -3831,7 +3831,7 @@ function setJourney(j, opt = {}) {
   if (cul) { const grp = g => [...cul.children].filter(li => { const x = li.querySelector('a'); return x && x.dataset.sec.startsWith(g + ':'); });
     const on = grp(pre), off = grp(other); if (on.length && off.length && on[0].compareDocumentPosition(off[0]) & Node.DOCUMENT_POSITION_PRECEDING) on.forEach(li => cul.insertBefore(li, off[0])); }
   kfGroups(null);
-  if (kfv.classList.contains('on')) history.replaceState(null, '', __path('kaempfe-' + j) + location.search);
+  if (kfv.classList.contains('on')) history.replaceState(null, '', __path('kaempfe') + location.search);
   if (changed && !opt.silent) kfv.querySelectorAll('.journey .rv').forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add('in'); });
   onScroll();
 }
