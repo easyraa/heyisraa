@@ -226,7 +226,7 @@ p{margin:0}
 .sentence .w,.sentence .kwb{transition:color 240ms var(--ease-out)}
 .kwb{font:inherit;color:inherit;display:inline;padding:0;border-radius:4px}
 .kwb .kw{color:var(--c)}
-.sentence .kwb[data-note="n1"]{margin-right:.12em} /* 25.11. (Israa): mehr Luft nach dem kursiven „ich“/„i“ */
+.sentence .kwb[data-note="n1"]{position:relative}.sentence .kwb[data-note="n1"]::after{content:"";position:absolute;inset:-.08em -.38em -.08em -.32em} /* 25.11. (Israa): größere unsichtbare Hover-Fläche, „i“ ist sonst kaum zu treffen; Layout unverändert */
 .kwb{cursor:help}
 .sentence.dim .w{color:var(--taupe)}
 .sentence.dim .kwb:not(.active) .kw{color:var(--taupe)}
@@ -3802,7 +3802,7 @@ addEventListener('resize', placePill);
 })();
 
 /* 25.11. TEST (Israa): Tastatur-Nutzer: Bild ab/Leertaste springt zum Anfang der nächsten Section, Bild auf/Umschalt+Leertaste zur vorherigen.
-   Mausrad, Trackpad, Touch und Pfeiltasten bleiben unverändert; Sections länger als ein Bildschirm laufen seitenweise. Global, auch live */
+   Pfeil hoch/runter ebenso (25.11., Mac hat kein Bild ab); Mausrad, Trackpad und Touch bleiben unverändert; Sections länger als ein Bildschirm laufen seitenweise. Global, auch live */
 (() => {
   const stops = () => {
     const v = document.querySelector('[data-view].on'); if (!v) return [];
@@ -3826,7 +3826,8 @@ addEventListener('resize', placePill);
   };
   const offset = () => { const c = document.querySelector('[data-view].on .chapbar'); if (!c) return 0; const st = getComputedStyle(c); if (st.position !== 'sticky' && st.position !== 'fixed') return 0; const r = c.getBoundingClientRect(); return r.top <= 1 && r.height < innerHeight / 3 ? r.height : 0; };
   addEventListener('keydown', e => {
-    const k = e.key; const down = k === 'PageDown' || (k === ' ' && !e.shiftKey), up = k === 'PageUp' || (k === ' ' && e.shiftKey);
+    const k = e.key, arrow = k === 'ArrowDown' || k === 'ArrowUp'; const down = k === 'PageDown' || k === 'ArrowDown' || (k === ' ' && !e.shiftKey), up = k === 'PageUp' || k === 'ArrowUp' || (k === ' ' && e.shiftKey);
+    if (arrow && (e.shiftKey || (e.target.closest && e.target.closest('[role="tab"],[role="tablist"],[role="slider"],[role="listbox"],[role="menu"],[role="radiogroup"],select,.lang-dd,.mnav')))) return;
     if ((!down && !up) || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
     const t = e.target; if (t && t.closest && t.closest('input,textarea,select,button,a,summary,[contenteditable=""],[contenteditable="true"],[role="button"],[role="tab"],[role="slider"],dialog,.lb,.mnav.open')) { if (k === ' ' || t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"],dialog')) return; }
     if (document.querySelector('dialog[open]') || document.documentElement.classList.contains('mnav-lock')) return;
