@@ -272,7 +272,7 @@ p{margin:0}
 .lang-sw span{opacity:.7}
 
 .lang-dd{position:relative;margin-left:calc(-1 * clamp(12px,3vw,32px) + 12px)}
-.nav-links .btn[aria-current="page"] + .lang-dd{margin-left:0} /* 25.11. (Israa): auf der Kontaktseite (ohne Button) gleiche Abstände wie zwischen den Links */
+.nav-links .btn[aria-current="page"] + .lang-dd{margin-left:-8px} /* 25.11. (Israa): auf der Kontaktseite (ohne Button) gleiche Abstände wie zwischen den Links */
 .lang-dd .lang-tg{display:inline-flex;align-items:center;gap:2px;padding:8px 2px 8px 8px;text-decoration:none;font-size:14px;line-height:20px;font-weight:600;letter-spacing:.06em}
 .lang-dd .lang-tg svg{width:12px;height:12px;transition:transform 200ms var(--ease-out)}
 .lang-dd .lang-tg[aria-expanded="true"] svg{transform:rotate(180deg)}
@@ -439,8 +439,7 @@ html.mnav-lock,html.mnav-lock body{overflow:hidden}
 .fv .fdl{display:inline-flex;align-items:center;gap:8px}
 .fv .fdl svg{width:18px;height:18px;flex:none;transition:transform 200ms var(--ease-out)}
 .fv .fdl:hover svg{transform:translateY(2px)}
-.fv-d .bottom{border-top:0;padding-inline:clamp(32px,5vw,80px);color:var(--blush)} /* 25.11. (Israa): bündig mit dem Inhalt der Footer-Karte */
-@media (max-width:560px){.fv-d .bottom{padding-inline:20px}}
+.fv-d .bottom{border-top:0;padding-inline:0;color:var(--blush)} /* 25.11. (Israa): bündig mit den Kanten der Footer-Karte */
 .fv-d .bottom a:hover{color:var(--beige)}
 /* Invertierter Footer, wenn die Section davor hell ist */
 .fv-d.inv .fd-card{background:var(--braun);color:var(--beige);--shoot:var(--rosa)}
@@ -1373,6 +1372,26 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 .pc-pen{cursor:pointer;transition:background-color 200ms var(--ease-out),transform 200ms var(--ease-out)}
 .pc-pen:hover{background:var(--blush);transform:scale(1.12)}
 .pc-shuffle.spin svg{animation:pcNudge 360ms var(--ease-out)}
+/* 25.11. TEST (Israa: Shuffle zu versteckt; A „zu viel los“ verworfen): C = beschriftete Merlot-Pill oben rechts, B = mit „Grüße aus …“ zu einer Leiste verbunden. Einmaliger Hinweis-Puls */
+.pc-bar{position:absolute;left:16px;right:16px;bottom:16px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;pointer-events:none}
+.pc-bar > *{pointer-events:auto}
+.pc-bar .pc-cap{position:static;min-width:0}.pc-bar .pc-shuffle{white-space:nowrap;flex:none}
+.pc-photo .pc-shuffle.lbl{width:auto;}
+.pc-bar .pc-shuffle,.pc-photo > .pc-shuffle.lbl{position:static;width:auto;height:auto;display:inline-flex;align-items:center;gap:8px;padding:8px 16px 8px 12px;border-radius:999px;background:var(--merlot);color:var(--beige);font:500 15px/20px var(--sans);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 8px 24px -10px rgba(51,11,4,.6)}
+.pc-bar .pc-shuffle:hover,.pc-photo > .pc-shuffle.lbl:hover{background:var(--weinrot)}
+.pc-photo > .pc-shuffle.lbl{position:absolute;top:16px;right:16px;bottom:auto;white-space:nowrap}
+.pc-photo > .pc-shuffle.lbl svg{width:18px;height:18px}
+.pc-bar .pc-shuffle svg{width:18px;height:18px}
+.pc-bar .pc-shuffle:focus-visible{outline:2px solid var(--beige);outline-offset:3px}
+html.sh-b .pc-bar{justify-content:flex-start;gap:0;right:auto}
+html.sh-b .pc-bar .pc-cap{border-radius:4px 0 0 4px;padding:9px 12px;align-self:stretch;display:flex;align-items:center}
+html.sh-b .pc-bar .pc-shuffle{border-radius:0 4px 4px 0;box-shadow:none;padding:8px 14px 8px 12px}
+.pc-bar .pc-shuffle.hint{animation:pcHint 1.6s var(--ease-out) 2}
+@keyframes pcHint{0%,100%{box-shadow:0 0 0 0 rgba(253,196,204,.9)}60%{box-shadow:0 0 0 10px rgba(253,196,204,0)}}
+@media (max-width:560px){.pc-bar{left:12px;right:12px;bottom:12px}.pc-bar .pc-shuffle{padding:10px}.pc-bar .pc-sh-t,.pc-photo > .pc-shuffle.lbl .pc-sh-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.pc-photo > .pc-shuffle.lbl{top:12px;right:12px;padding:10px}.pc-bar .pc-shuffle svg{width:20px;height:20px}} /* mobil: Platz reicht nicht für Text, daher Merlot-Rund-Button */
+@media (prefers-reduced-motion:reduce){.pc-bar .pc-shuffle.hint{animation:none}}
+.sh-test{position:fixed;left:16px;bottom:16px;z-index:96;display:flex;gap:2px;padding:4px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px rgba(51,11,4,.15),0 8px 24px -8px rgba(51,11,4,.35);font:500 12px/1 var(--mono);letter-spacing:.06em}
+.sh-test span{padding:8px 8px 8px 10px;color:var(--braun-g)}.sh-test button{padding:8px 10px;border-radius:999px;color:var(--braun)}.sh-test button[aria-pressed="true"]{background:var(--braun);color:var(--beige)}
 @keyframes pcNudge{40%{transform:scale(.86)}}
 @media (prefers-reduced-motion:reduce){.pc-pen:hover{transform:none}}
 /* 24.11. 21 Uhr (Kommentare): mehr Luft über dem Button, Extern-Pfeil wandert nach rechts oben, größeres Foto auf großen Bildschirmen */
@@ -1679,7 +1698,7 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 
 
 /* Nach oben: schwebender Button unten rechts (lange Seiten). --fab-stack schiebt ihn nach oben, wenn darunter ein weiterer Button sitzt */
-.to-top{position:fixed;right:max(24px,env(safe-area-inset-right,0px));bottom:calc(max(24px,env(safe-area-inset-bottom,0px)) + var(--fab-stack,0px));z-index:70;width:56px;height:56px;border:0;border-radius:50%;padding:0;display:grid;place-items:center;cursor:pointer;background:var(--merlot);color:var(--weiss);box-shadow:0 8px 24px rgba(51,11,4,.18);opacity:0;visibility:hidden;transform:translateY(16px) scale(.9);transition:opacity 280ms var(--ease-out),transform 380ms var(--ease-out),visibility 0s 380ms,background-color 300ms,color 300ms;overflow:hidden}
+.to-top{position:fixed;right:max(24px,env(safe-area-inset-right,0px));bottom:calc(max(24px,env(safe-area-inset-bottom,0px)) + var(--fab-stack,0px) + var(--fab-foot,0px));z-index:70;width:56px;height:56px;border:0;border-radius:50%;padding:0;display:grid;place-items:center;cursor:pointer;background:var(--merlot);color:var(--weiss);box-shadow:0 8px 24px rgba(51,11,4,.18);opacity:0;visibility:hidden;transform:translateY(16px) scale(.9);transition:opacity 280ms var(--ease-out),transform 380ms var(--ease-out),visibility 0s 380ms,background-color 300ms,color 300ms;overflow:hidden}
 .to-top.show{opacity:1;visibility:visible;transform:none;transition:opacity 280ms var(--ease-out),transform 380ms var(--ease-out),visibility 0s,background-color 300ms,color 300ms}
 .to-top:hover{background:var(--weinrot)}
 .to-top.on-dark{background:var(--blush);color:var(--braun)}
@@ -1694,7 +1713,7 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 .to-top.piu svg{animation:piu 700ms cubic-bezier(.22,1,.36,1)}
 @keyframes piu{0%{transform:none}30%{transform:translateY(-6px)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.to-top,.to-top.show{transition:opacity 200ms,visibility 0s}.to-top svg,.to-top:hover svg{transition:none;transform:none}.to-top.piu svg{animation:none}}
-@media (max-width:600px){.to-top{width:48px;height:48px;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + var(--fab-stack,0px))}}
+@media (max-width:600px){.to-top{width:48px;height:48px;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + var(--fab-stack,0px) + var(--fab-foot,0px))}}
 /* 21.11.: Kämpfe-App-Ausgangslage ohne Boxen (3 Spalten, Linien dazwischen); Flows wieder als Karten */
 [data-nav="a:Ausgangslage"] .cards3{--fg:clamp(48px,6vw,80px);column-gap:var(--fg)}
 [data-nav="a:Ausgangslage"] .cards3 article{position:relative;background:none;border-radius:0;padding:0}
@@ -3803,6 +3822,27 @@ addEventListener('resize', placePill);
   apply();
 })();
 
+/* 25.11. TEST (Israa): Shuffle sichtbarer machen. Varianten A/B nur im Prototyp mit Testleiste; live bleibt vorerst alles wie bisher */
+(() => {
+  const LIVE = /(^|\.)heyisraa\.de$/.test(location.hostname);   /* 25.11. Israa wählt C (oben rechts): live fest C, Testleiste nur im Prototyp */
+  const btn = document.getElementById('pcShuffle'), cap = document.getElementById('pcCap'); if (!btn || !cap) return;
+  const EN = document.documentElement.lang === 'en';
+  const bar = document.createElement('div'); bar.className = 'pc-bar'; cap.before(bar); bar.append(cap, btn);
+  const t = document.createElement('span'); t.className = 'pc-sh-t'; t.textContent = EN ? 'Another place' : 'Anderes Motiv'; btn.append(t);
+  let v = 'a'; try { v = localStorage.getItem('shTest') || 'c'; } catch (_) {} if (v !== 'b' && v !== 'c') v = 'c'; if (LIVE) v = 'c';
+  const H = document.documentElement;
+  const tb = document.createElement('div'); tb.className = 'sh-test'; tb.setAttribute('role', 'group'); tb.setAttribute('aria-label', 'Test Shuffle');
+  tb.innerHTML = '<span>Shuffle</span>' + [['c', 'C Oben rechts'], ['b', 'B Leiste']].map(([k, l]) => `<button type="button" data-v="${k}">${l}</button>`).join('');
+  const fig = cap.closest('figure');
+  const apply = () => { H.classList.toggle('sh-b', v === 'b'); btn.classList.toggle('lbl', v === 'c'); if (v === 'c') fig.append(btn); else bar.append(btn); tb.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); };
+  tb.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; v = b.dataset.v; try { localStorage.setItem('shTest', v); } catch (_) {} apply(); });
+  if (!LIVE) document.body.append(tb); apply();
+  const vis = () => { const c = document.querySelector('[data-view="kontakt"]'); tb.hidden = !(c && c.classList.contains('on')); }; vis(); addEventListener('hashchange', () => setTimeout(vis, 100)); addEventListener('popstate', () => setTimeout(vis, 100));
+  /* einmaliger Hinweis-Puls, sobald die Karte sichtbar ist */
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { setTimeout(() => btn.classList.add('hint'), 900); io.disconnect(); } }, {threshold: .6}); io.observe(btn); }
+  btn.addEventListener('click', () => btn.classList.remove('hint'));
+})();
+
 /* 25.11. TEST (Israa): Tastatur-Nutzer: Bild ab/Leertaste springt zum Anfang der nächsten Section, Bild auf/Umschalt+Leertaste zur vorherigen.
    Pfeil hoch/runter ebenso (25.11., Mac hat kein Bild ab); Mausrad, Trackpad und Touch bleiben unverändert; Sections länger als ein Bildschirm laufen seitenweise. Global, auch live */
 (() => {
@@ -4213,6 +4253,11 @@ route(); requestAnimationFrame(() => { placePill(); placeJPill(); });
 
 /* Nach oben: nur auf langen Seiten, erscheint nach gut einem Bildschirm, passt sich hellen und dunklen Flächen an */
 const toTop = document.getElementById('toTop');
+/* 25.11.: Rechtliches steht jetzt bündig mit der Footer-Karte; sobald die Zeile ins Bild kommt, weicht der Nach-oben-Button nach oben aus */
+{ const footLift = () => { const v = document.querySelector('[data-view].on') || document; const row = [...v.querySelectorAll('footer .bottom')].find(r => r.offsetParent); let d = 0;
+    if (row) { const r = row.getBoundingClientRect(); if (r.top < innerHeight) d = Math.max(0, innerHeight - r.top); }
+    document.documentElement.style.setProperty('--fab-foot', d + 'px'); };
+  addEventListener('scroll', footLift, {passive: true}); addEventListener('resize', footLift); addEventListener('hashchange', () => setTimeout(footLift, 120)); addEventListener('popstate', () => setTimeout(footLift, 120)); footLift(); }
 const TOP_VIEWS = ['start','ueber-mich','daad','odyssey','kaempfe','djv','impressum','datenschutz']; /* 25.11.: auch Rechtliches */
 function toTopUpdate() {
   const v = document.querySelector('[data-view].on'); const ok = v && TOP_VIEWS.includes(v.dataset.view);
