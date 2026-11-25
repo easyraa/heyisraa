@@ -1278,6 +1278,7 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 .pc-fields dd{margin:0;font-size:18px;line-height:28px}
 .pc-fields .ct-mail::after{display:none}
 .pc-send{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.pc-img{background:none;border:0;padding:4px 0;margin-top:4px;font:inherit;font-size:14px;line-height:20px;color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;cursor:pointer}.pc-img:hover{text-decoration-thickness:2px}.pc-img:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:2px}.pc-img[aria-busy=true]{opacity:.6;cursor:progress}
 .pc .btn-rosa{color:var(--braun)}
 .pc .btn-rosa svg{width:20px;height:20px;flex:none}
 .pc .btn-rosa:hover svg rect,.pc .btn-rosa:hover svg path{stroke-width:1.8}
@@ -3015,7 +3016,7 @@ figure>.cap,.vis .cap,.sc .cap{margin-top:0}
           <div class="pc-body">
             <div class="pc-msg-w"><p class="pc-hallo">Hey Israa,</p><p class="text-l pc-msg">ich habe dein Portfolio gesehen und würde dich gern kennenlernen. Hast du nächste Woche Zeit?</p></div>
             <dl class="pc-fields"><div><dt class="label">Betreff</dt><dd>Hallo aus deinem Portfolio</dd></div><div><dt class="label">An</dt><dd><button class="ct-mail copy" type="button" data-copy="israa@aldoaiss.de" aria-label="E-Mail-Adresse kopieren">israa@aldoaiss.de</button></dd></div></dl>
-            <div class="pc-send"><a class="btn btn-blush" id="pcSend" href="mailto:israa@aldoaiss.de"><span>E-Mail senden</span><span class="arr">↗</span></a></div>
+            <div class="pc-send"><a class="btn btn-blush" id="pcSend" href="mailto:israa@aldoaiss.de"><span>E-Mail senden</span><span class="arr">↗</span></a><button class="pc-img" type="button" id="pcImgBtn">Karte als Bild speichern</button></div>
           </div>
         </div>
       </article>
@@ -3292,6 +3293,10 @@ document.querySelectorAll('.logo').forEach(l => l.addEventListener('mouseenter',
   stamps = Array.isArray(stamps) ? stamps.filter(ok).slice(0, 2) : [];
   let custom = stamps.length > 0;
   if (!stamps.length) stamps = [Object.assign({}, DEF)];
+  /* 25.11.: Postkarte aus dem Link in der E-Mail (?karte=…) genau so wieder zeigen */
+  const KQ = (() => { try { const k = new URLSearchParams(location.search).get('karte'); if (!k) return null; const j = JSON.parse(decodeURIComponent(escape(atob(k.replace(/-/g, '+').replace(/_/g, '/'))))); return j && typeof j === 'object' ? j : null; } catch (_) { return null; } })();
+  if (KQ && Array.isArray(KQ.s)) { const ss = KQ.s.map(a => Array.isArray(a) ? {farbe: a[0], motiv: a[1], wert: a[2], eigen: String(a[3] || '').slice(0, 8)} : null).filter(ok).slice(0, 2); if (ss.length) { stamps = ss; custom = true; } }
+  let want = KQ && typeof KQ.p === 'string' ? KQ.p.replace(/[^\w.-]/g, '') : null;
   // Briefmarke mit echtem Zackenrand
   function stampSVG(c, id) {
     const W = 88, H = 104, R = 3.5, STEP = 11, nx = Math.round(W / STEP), ny = Math.round(H / STEP); let holes = '';
@@ -3324,11 +3329,16 @@ document.querySelectorAll('.logo').forEach(l => l.addEventListener('mouseenter',
   const send = document.getElementById('pcSend');
   let ortGruss = '';
   const desc = c => { const w = wtext(c); return EN ? `${MOTIV[c.motiv][1].toLowerCase()} in ${FARBE[c.farbe].n[1].toLowerCase()}${w ? ' saying "' + w + '"' : ''}` : `${MOTIV[c.motiv][0]} in ${FARBE[c.farbe].n[0]}${w ? ' mit „' + w + '“' : ''}`; };
+  const photoKey = () => { const m = /([^/]+?)(?:-t\d+)?\.(?:webp|jpe?g|png)$/i.exec(img.getAttribute('src') || ''); return m ? m[1] : ''; };
+  function cardURL() {
+    const j = {p: photoKey(), s: stamps.map(c => [c.farbe, c.motiv, c.wert, c.wert === 'eigen' ? (c.eigen || '').slice(0, 8) : ''])};
+    const b = btoa(unescape(encodeURIComponent(JSON.stringify(j)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return 'https://heyisraa.de' + (EN ? '/en' : '') + '/contact?karte=' + b;
+  }
   function mail() {
     const sb = EN ? 'Hello from your portfolio' : 'Hallo aus deinem Portfolio';
     let body = EN ? 'Hi Israa,\n\nI saw your portfolio and would love to get to know you. Do you have time next week?' : 'Hey Israa,\n\nich habe dein Portfolio gesehen und würde dich gern kennenlernen. Hast du nächste Woche Zeit?';
-    if (ortGruss) body += '\n\n' + (EN ? 'Card: ' : 'Postkarte: ') + ortGruss;
-    if (custom) body += '\n\n' + (EN ? (stamps.length > 1 ? 'PS: I designed my own stamps: ' : 'PS: I designed my own stamp: ') : (stamps.length > 1 ? 'PS: Meine Briefmarken habe ich selbst gestaltet: ' : 'PS: Meine Briefmarke habe ich selbst gestaltet: ')) + stamps.map(desc).join(EN ? ' and ' : ' und ') + '.';
+    if (ortGruss) body += '\n\n' + (EN ? 'My postcard (' + ortGruss + '): ' : 'Meine Postkarte (' + ortGruss + '): ') + cardURL();
     body += '\n\n';
     send.href = 'mailto:israa@aldoaiss.de?subject=' + encodeURIComponent(sb) + '&body=' + encodeURIComponent(body);
   }
@@ -3388,7 +3398,8 @@ document.querySelectorAll('.logo').forEach(l => l.addEventListener('mouseenter',
   function show(next) {
     const list = shots(); if (!list.length) return;
     const pre = nxt && list[nxt.i] && list[nxt.i].src === nxt.e.src ? nxt : null;
-    const i = pre ? pre.i : rand(list); cur = i; nxt = null;
+    let wi = -1; if (want) { wi = list.findIndex(x => x.src.indexOf('/' + want) > -1); want = null; }
+    const i = wi > -1 ? wi : pre ? pre.i : rand(list); cur = i; nxt = null;
     const e = list[i], src = e.src;
     const swap = () => { img.src = src; img.alt = (EN ? 'Photo from ' : 'Foto aus ') + e.ort; cap.textContent = ortGruss = gruss(e.ort); mail(); setTimeout(prep, 400); };
     if (!next || matchMedia('(prefers-reduced-motion: reduce)').matches) { swap(); if (img.complete) img.classList.add('ld'); return; }
@@ -3396,6 +3407,34 @@ document.querySelectorAll('.logo').forEach(l => l.addEventListener('mouseenter',
     Promise.all([pre ? pre.ready : null, new Promise(r => setTimeout(r, 140))]).then(swap);
   }
   img.addEventListener('load', () => img.classList.add('ld'));
+  /* 25.11.: Karte als JPEG (Handy: Teilen-Menü mit Bild, sonst Download), zum selbst Anhängen */
+  const ib = document.getElementById('pcImgBtn');
+  const probe = (() => { try { return !!(navigator.canShare && navigator.canShare({files: [new File([''], 'p.jpg', {type: 'image/jpeg'})]})); } catch (_) { return false; } })();
+  if (ib) {
+    ib.textContent = probe ? (EN ? 'Share card as image' : 'Karte als Bild teilen') : (EN ? 'Save card as image' : 'Karte als Bild speichern');
+    const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+    const cs = getComputedStyle(document.documentElement);
+    const svgSrc = c => { let t = stampSVG(c, 'pcJ' + Math.random().toString(36).slice(2)).replace(/var\((--[\w-]+)\)/g, (m, v) => cs.getPropertyValue(v).trim() || '#000');
+      t = t.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="192" height="224" '); return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(t); };
+    async function jpeg() {
+      const ph = await loadImg(img.currentSrc || img.src), land = ph.naturalWidth >= ph.naturalHeight;
+      const W = land ? 1600 : 1200, H = land ? 1200 : 1600, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+      g.fillStyle = cs.getPropertyValue('--beige').trim() || '#f3eee6'; g.fillRect(0, 0, W, H);
+      const k = Math.max(W / ph.naturalWidth, H / ph.naturalHeight), pw = ph.naturalWidth * k, phh = ph.naturalHeight * k;
+      g.drawImage(ph, (W - pw) / 2, (H - phh) / 2, pw, phh);
+      let x = W - 48; for (const c of stamps) { const st = await loadImg(svgSrc(c)); x -= 192; g.drawImage(st, x, 48, 192, 224); x -= 24; }
+      const t = (cap.textContent || '').toUpperCase(); if (t) { g.font = '400 30px "IBM Plex Mono", monospace'; try { g.letterSpacing = '3px'; } catch (_) {} const tw = g.measureText(t).width; g.fillStyle = cs.getPropertyValue('--beige').trim() || '#f3eee6'; const bx = 48, by = H - 48 - 72; if (g.roundRect) { g.beginPath(); g.roundRect(bx, by, tw + 56, 72, 8); g.fill(); } else g.fillRect(bx, by, tw + 56, 72); g.fillStyle = getComputedStyle(cap).color || '#330b04'; g.textBaseline = 'middle'; g.fillText(t, bx + 28, by + 37); }
+      return new Promise(r => cv.toBlob(r, 'image/jpeg', .88));
+    }
+    ib.addEventListener('click', async () => {
+      if (ib.getAttribute('aria-busy') === 'true') return; ib.setAttribute('aria-busy', 'true');
+      try {
+        const blob = await jpeg(); const name = (EN ? 'postcard' : 'postkarte') + '-israa.jpg', file = new File([blob], name, {type: 'image/jpeg'});
+        if (probe) { try { await navigator.share({files: [file], title: EN ? 'Postcard to Israa' : 'Postkarte an Israa'}); } catch (_) {} }
+        else { const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
+      } catch (_) {} finally { ib.removeAttribute('aria-busy'); }
+    });
+  }
   img.setAttribute('fetchpriority', 'high');
   btn.addEventListener('pointerenter', () => { if (!nxt) prep(); });
   btn.addEventListener('click', () => { btn.classList.remove('spin'); void btn.offsetWidth; btn.classList.add('spin'); show(true); });
