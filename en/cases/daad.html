@@ -272,6 +272,7 @@ p{margin:0}
 .lang-sw span{opacity:.7}
 
 .lang-dd{position:relative;margin-left:calc(-1 * clamp(12px,3vw,32px) + 12px)}
+.nav-links .btn[aria-current="page"] + .lang-dd{margin-left:0} /* 25.11. (Israa): auf der Kontaktseite (ohne Button) gleiche Abstände wie zwischen den Links */
 .lang-dd .lang-tg{display:inline-flex;align-items:center;gap:2px;padding:8px 2px 8px 8px;text-decoration:none;font-size:14px;line-height:20px;font-weight:600;letter-spacing:.06em}
 .lang-dd .lang-tg svg{width:12px;height:12px;transition:transform 200ms var(--ease-out)}
 .lang-dd .lang-tg[aria-expanded="true"] svg{transform:rotate(180deg)}
@@ -438,7 +439,8 @@ html.mnav-lock,html.mnav-lock body{overflow:hidden}
 .fv .fdl{display:inline-flex;align-items:center;gap:8px}
 .fv .fdl svg{width:18px;height:18px;flex:none;transition:transform 200ms var(--ease-out)}
 .fv .fdl:hover svg{transform:translateY(2px)}
-.fv-d .bottom{border-top:0;padding-inline:clamp(0px,3.4vw,48px);color:var(--blush)}
+.fv-d .bottom{border-top:0;padding-inline:clamp(32px,5vw,80px);color:var(--blush)} /* 25.11. (Israa): bündig mit dem Inhalt der Footer-Karte */
+@media (max-width:560px){.fv-d .bottom{padding-inline:20px}}
 .fv-d .bottom a:hover{color:var(--beige)}
 /* Invertierter Footer, wenn die Section davor hell ist */
 .fv-d.inv .fd-card{background:var(--braun);color:var(--beige);--shoot:var(--rosa)}
