@@ -1,4 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="theme-color" content="#330b04">
 <script>/* 25.11.: Adressen ohne #, Sprache aus der Adresse (/en = Englisch) */
 (function(){
   var V = ["ueber-mich", "daad", "odyssey", "kaempfe", "kaempfe-website", "kaempfe-app", "djv", "kontakt", "impressum", "datenschutz", "cases"], S = {"ueber-mich": "about", "kontakt": "contact"}, R = {};
@@ -1437,7 +1438,10 @@ dialog.lb::backdrop{background:rgba(51,11,4,.82);backdrop-filter:blur(4px)}
 .pw-star{width:28px;height:28px;color:var(--senf);opacity:0;transition:opacity 300ms}
 .pw-star svg{width:100%;height:100%;display:block}
 .page-wipe.cover .pw-star{opacity:1;transition-delay:300ms}
-.page-iris{position:fixed;inset:0;z-index:250;background:var(--weinrot);pointer-events:none;display:grid;place-items:center;opacity:0;visibility:hidden}
+.page-iris{position:fixed;inset:0;z-index:250;background:var(--weinrot);pointer-events:none;display:none;place-items:center;opacity:0;visibility:hidden}
+/* 25.11. (Israa, iPhone): versteckte Vollflächen in Weinrot färben sonst die Safari-Leisten; nur im aktiven Zustand Farbe */
+.page-wipe:not(.cover):not(.reveal){background:transparent}.page-wipe:not(.cover):not(.reveal) .pw-star{visibility:hidden}
+.mnav:not(.open){background-color:transparent;transition:clip-path 480ms var(--ease-io),visibility 0s 480ms,background-color 0s 480ms}
 
 
 .page-iris .pw-star{opacity:0;transform:scale(.6);transition:opacity 400ms,transform 700ms var(--ease-out)}
@@ -3393,7 +3397,17 @@ document.querySelectorAll('.logo').forEach(l => l.addEventListener('mouseenter',
   let cur = -1;
   // Schneller laden (24.11. 21 Uhr): nächstes Foto vorab laden und dekodieren, Start ohne auf die ganze Seite zu warten
   let nxt = null;
-  const rand = list => { let i = Math.floor(Math.random() * list.length); if (list.length > 1 && i === cur) i = (i + 1) % list.length; return i; };
+  /* 25.11. (Israa): Mischen wie ein Kartenstapel: jedes Foto kommt einmal dran, bevor sich eins wiederholt, und nie zweimal direkt hintereinander */
+  let bag = [];
+  const rand = list => {
+    bag = bag.filter(i => i < list.length);
+    if (!bag.length) {
+      bag = list.map((_, i) => i);
+      for (let k = bag.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [bag[k], bag[j]] = [bag[j], bag[k]]; }
+      if (bag.length > 1 && bag[0] === cur) bag.push(bag.shift());
+    }
+    return bag.shift();
+  };
   function prep() {
     const list = shots(); if (!list.length) return;
     let i = rand(list); const e = list[i], im = new Image(); im.decoding = 'async'; im.src = e.src;
@@ -3508,7 +3522,20 @@ function route(still) {
   else window.scrollTo(0, 0);
   if (still) view.querySelectorAll('.rv:not(.in)').forEach(el => { if (el.getBoundingClientRect().top < innerHeight * 0.95) el.classList.add('in'); });
   cbSnap(name);
+  requestAnimationFrame(() => setBarTone(view));
   setTimeout(() => { observeReveals(view); onScroll(); lgUpdate(); if (name === 'ueber-mich') placePill(); if (name === 'kaempfe') placeJPill(); }, 30);
+}
+/* 25.11. (Israa, iPhone): Browserleisten in der Farbe des Seitenkopfs */
+function setBarTone(view) {
+  let c = '';
+  const opaque = el => { const b = getComputedStyle(el).backgroundColor; return b && b !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(b) ? b : ''; };
+  /* was oben links wirklich zu sehen ist (ohne feste Ebenen wie Navi, Cursor, Vorhang) */
+  const hit = document.elementsFromPoint(4, 4).find(el => view.contains(el) && getComputedStyle(el).position !== 'fixed');
+  for (let el = hit; el && el !== document.documentElement && !c; el = el.parentElement) c = opaque(el);
+  if (!c) for (const el of [view.querySelector('header'), view]) { if (el && (c = opaque(el))) break; }
+  if (!c) c = getComputedStyle(document.body).backgroundColor;
+  let m = document.querySelector('meta[name="theme-color"]'); if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.append(m); }
+  m.content = c; document.documentElement.style.backgroundColor = c;
 }
 /* Seitenwechsel mit kurzem Vorhang */
 const wipe = document.getElementById('pageWipe');
