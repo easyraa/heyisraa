@@ -480,10 +480,10 @@ html.mnav-lock,html.mnav-lock body{overflow:hidden}
 .swt-pics img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:6px;display:block}
 @media (max-width:820px){.sw-tease .swt-card{grid-template-columns:1fr}.swt-pics{order:-1}.swt-pics img{aspect-ratio:1}}
 /* 25.11. TEST: B schwebender Mini-Schalter */
-.sw-float{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));z-index:65;display:inline-flex;padding:4px;border-radius:999px;background:var(--braun);box-shadow:0 12px 32px -12px rgba(51,11,4,.5);transform:translate(-50%,calc(100% + 40px));opacity:0;visibility:hidden;transition:transform 420ms var(--ease-out),opacity 300ms,visibility 0s 420ms}
+.sw-float{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));z-index:65;display:inline-flex;padding:4px;border-radius:999px;background:var(--merlot);box-shadow:0 12px 32px -12px rgba(51,11,4,.5);transform:translate(-50%,calc(100% + 40px));opacity:0;visibility:hidden;transition:transform 420ms var(--ease-out),opacity 300ms,visibility 0s 420ms}
 .sw-float.show{transform:translate(-50%,0);opacity:1;visibility:visible;transition:transform 420ms var(--ease-out),opacity 300ms,visibility 0s}
 .sw-float button{padding:8px 16px;border-radius:999px;font-size:15px;line-height:20px;color:var(--beige);transition:background-color 250ms,color 250ms}
-.sw-float button[aria-pressed="true"]{background:var(--rosa);color:var(--braun)}
+.sw-float button[aria-pressed="true"]{background:var(--blush);color:var(--braun)}
 .sw-float button:focus-visible{outline:2px solid var(--blush);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.sw-float,.sw-float.show{transition:opacity 200ms,visibility 0s}}
 .sw-test{position:fixed;left:16px;bottom:16px;z-index:96;display:flex;gap:2px;padding:4px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px rgba(51,11,4,.15),0 8px 24px -8px rgba(51,11,4,.35);font:500 12px/1 var(--mono);letter-spacing:.06em}
@@ -3752,7 +3752,7 @@ addEventListener('resize', placePill);
 (() => {
   const LIVE = /(^|\.)heyisraa\.de$/.test(location.hostname);
   let v = 'ab'; try { v = localStorage.getItem('swTest') || 'ab'; } catch (_) {}
-  if (LIVE) v = '';
+  if (LIVE) v = 'b';   /* 25.11. Israa: live nur der schwebende Schalter */
   const EN = document.documentElement.lang === 'en';
   const tease = document.getElementById('swTease'), tl = document.getElementById('swTeaseL'), th = document.getElementById('swTeaseH'), tb = document.getElementById('swTeaseB'), tp = document.getElementById('swTeaseP');
   const T = {
@@ -3779,8 +3779,9 @@ addEventListener('resize', placePill);
   }
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(es => { heroVis = es[0].isIntersecting || es[0].boundingClientRect.top > 0; floatUpdate(); }).observe(heroSw);
-    const ends = new Set(); const io = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? ends.add(e.target) : ends.delete(e.target)); endVis = ends.size > 0; floatUpdate(); });
-    io.observe(tease); about.querySelectorAll('.footer').forEach(f => io.observe(f));
+    /* verschwindet erst, wenn die Footer-Karte (bzw. der Teaser) wirklich ins Bild kommt, nicht schon beim Footer-Rand */
+    const ends = new Set(); const io = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? ends.add(e.target) : ends.delete(e.target)); endVis = ends.size > 0; floatUpdate(); }, {rootMargin: '0px 0px -80px 0px'});
+    io.observe(tease); about.querySelectorAll('.footer .fd-card').forEach(f => io.observe(f));
   }
   addEventListener('hashchange', () => setTimeout(floatUpdate, 120));
   function apply() {
