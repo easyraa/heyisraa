@@ -17,7 +17,10 @@
 <meta name="twitter:description" content="Portfolio von Israa Al-Doaiss: Case Studies zu UX, UI und Designsystemen, vom ersten Nutzergespräch über das Konzept bis zum fertigen Interface.">
 <meta name="twitter:image" content="https://heyisraa.de/img/og-bild.png">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23330b04'/%3E%3Cpath fill='%23aba03d' d='M32 10c1.6 11.7 8.9 19.2 22 22-13.1 2.8-20.4 10.3-22 22-1.6-11.7-8.9-19.2-22-22 13.1-2.8 20.4-10.3 22-22Z'/%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon/favicon-180.png">
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
 /* 22.11.: Odyssey-Lösung als blaue Bühne: Bildschirmaufnahmen im Hochformat (vid/od-v-*.mp4, Handy freigestellt auf Ody-Blau), Tabs links, nur der aktive Bereich spielt */
@@ -3421,6 +3424,7 @@ function route(still) {
   let toCases = false;
   if (h === 'cases') { h = 'start'; toCases = true; history.replaceState(null, '', '#start'); } if (h === 'kaempfe-website' || h === 'kaempfe-app') { jr = h.slice(8); h = 'kaempfe'; }
   const name = ['start','ueber-mich','daad','odyssey','kaempfe','djv','kontakt','impressum','datenschutz'].includes(h) ? h : (h === '' ? 'start' : '404');
+  if (name === 'start' && location.hash) history.replaceState(null, '', location.pathname + location.search); /* 25.11.: Startseite ohne #start in der Adresse */
   views.forEach(v => { const on = v.dataset.view === name; v.classList.toggle('on', on); });
   const view = views.find(v => v.dataset.view === name);
   if (name === 'kaempfe') setJourney(jr || journey, {silent: true});
@@ -3977,7 +3981,7 @@ function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame
 addEventListener('scroll', onScroll, {passive: true}); addEventListener('resize', onScroll);
 
 setMode('beruf', true);
-if (!location.hash) history.replaceState(null, '', '#start');
+/* 25.11.: Startseite bleibt ohne #start (heyisraa.de/) */
 route(); requestAnimationFrame(() => { placePill(); placeJPill(); });
 })();
 
