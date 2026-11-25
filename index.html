@@ -1,4 +1,31 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script>/* 25.11.: Adressen ohne #, Sprache aus der Adresse (/en = Englisch) */
+(function(){
+  var V = ["ueber-mich", "daad", "odyssey", "kaempfe", "kaempfe-website", "kaempfe-app", "djv", "kontakt", "impressum", "datenschutz", "cases"], S = {"ueber-mich": "about", "kontakt": "contact"}, R = {};
+  for (var k in S) R[S[k]] = k;
+  function parse(){ var p = location.pathname.replace(/^\/+|\/+$/g,'').replace(/\.html$/,'').split('/');
+    if (p[p.length-1] === 'index') p.pop();
+    var en = p[0] === 'en'; if (en) p.shift(); return {en: en, s: p.join('/')}; }
+  var u = parse();
+  var q = new URLSearchParams(location.search), ql = q.get('lang');
+  if (ql) { q.delete('lang'); if (ql === 'en') u.en = true; if (ql === 'de') u.en = false; }
+  var h = location.hash.slice(1).split(/[?&]/)[0];
+  if (h === 'start') u.s = ''; else if (h && (V.indexOf(h) > -1 || h === '404')) u.s = S[h] || h;
+  window.__pre = u.en ? '/en' : '';
+  window.__path = function(v){ var s = (v === 'start' || !v) ? '' : (S[v] || v); return (window.__pre + (s ? '/' + s : '')) || '/'; };
+  window.__vh = function(){ var s = parse().s; return s ? '#' + (R[s] || s) : ''; };
+  window.__URL_LANG = u.en ? 'en' : 'de';
+  window.__VIEWS = V;
+  var qs = q.toString(), want = window.__path(R[u.s] || u.s) + (qs ? '?' + qs : '');
+  if (h || ql || want !== location.pathname + location.search) {
+    if ((h && (h === 'start' || V.indexOf(h) > -1 || h === '404')) || ql) history.replaceState(null, '', want);
+  }
+})();
+</script>
+<link rel="canonical" href="https://heyisraa.de/">
+<link rel="alternate" hreflang="de" href="https://heyisraa.de/">
+<link rel="alternate" hreflang="en" href="https://heyisraa.de/en">
+<link rel="alternate" hreflang="x-default" href="https://heyisraa.de/">
 <title>Israa Al-Doaiss · Senior Product Designerin</title>
 <meta name="description" content="Portfolio von Israa Al-Doaiss: Case Studies zu UX, UI und Designsystemen, vom ersten Nutzergespräch über das Konzept bis zum fertigen Interface.">
 <meta property="og:type" content="website">
@@ -3027,17 +3054,13 @@ figure>.cap,.vis .cap,.sc .cap{margin-top:0}
 <script>
 /* ---------- Sprache DE/EN: Deutsch ist Standard, Englisch wird beim Laden übersetzt ---------- */
 (() => {
-  const q = new URLSearchParams(location.search).get('lang');
-  let L = null;
-  try { if (q === 'en' || q === 'de') localStorage.setItem('lang', q); L = localStorage.getItem('lang'); } catch (e) {}
-  if (q === 'en' || q === 'de') L = q;
-  if (!L) { const m = /(?:^|;)lang=(en|de)(?:;|$)/.exec(window.name || ''); L = m ? m[1] : 'de'; }
+  let L = window.__URL_LANG || 'de';
+  try { localStorage.setItem('lang', L); } catch (e) {}
   window.LANG = L;
-  window.setLang = l => {
+  window.setLang = l => {  /* 25.11.: Sprache steckt in der Adresse, Wechsel = gleiche Seite in der anderen Sprache */
     try { localStorage.setItem('lang', l); } catch (e) {}
-    window.name = 'lang=' + l;
-    const u = new URL(location.href);
-    if (u.searchParams.has('lang')) { u.searchParams.set('lang', l); location.replace(u.href); } else location.reload();
+    const v = (window.__vh() || '#start').slice(1); const pre = window.__pre; window.__pre = l === 'en' ? '/en' : '';
+    const to = window.__path(v); window.__pre = pre; location.href = to;
   };
   document.documentElement.lang = L;
   /* 24.11.: Lebenslauf je Sprache (DE = Lebenslauf, EN = CV) */
@@ -3129,7 +3152,7 @@ function mnavSet(open) {
   if (open === mnav.classList.contains('open')) return;
   if (open) {
     mnavFrom = document.activeElement;
-    const cur = (location.hash.slice(1) || 'start').split('-')[0];
+    const cur = (__vh().slice(1) || 'start').split('-')[0];
     mnav.querySelectorAll('ul a').forEach(a => a.dataset.h === cur || (cur === 'ueber' && a.dataset.h === 'ueber-mich') ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
     mnav.inert = false; mnav.classList.add('open'); doc.classList.add('mnav-lock');
     setTimeout(() => mnav.querySelector('.mclose').focus({preventScroll: true}), 60);
@@ -3419,12 +3442,12 @@ function glideTo(t) {
   }, 350);
 }
 function route(still) {
-  let h = (location.hash || '#start').slice(1); let jr = null;
+  let h = (__vh() || '#start').slice(1); let jr = null;
   /* 17.11.: eigene Cases-Seite entfällt, „Cases“ führt zur Case-Section auf der Startseite */
   let toCases = false;
-  if (h === 'cases') { h = 'start'; toCases = true; history.replaceState(null, '', '#start'); } if (h === 'kaempfe-website' || h === 'kaempfe-app') { jr = h.slice(8); h = 'kaempfe'; }
+  if (h === 'cases') { h = 'start'; toCases = true; history.replaceState(null, '', __path('start') + location.search); } if (h === 'kaempfe-website' || h === 'kaempfe-app') { jr = h.slice(8); h = 'kaempfe'; }
   const name = ['start','ueber-mich','daad','odyssey','kaempfe','djv','kontakt','impressum','datenschutz'].includes(h) ? h : (h === '' ? 'start' : '404');
-  if (name === 'start' && location.hash) history.replaceState(null, '', location.pathname + location.search); /* 25.11.: Startseite ohne #start in der Adresse */
+   /* 25.11.: Startseite ohne #start in der Adresse */
   views.forEach(v => { const on = v.dataset.view === name; v.classList.toggle('on', on); });
   const view = views.find(v => v.dataset.view === name);
   if (name === 'kaempfe') setJourney(jr || journey, {silent: true});
@@ -3729,7 +3752,7 @@ function setJourney(j, opt = {}) {
   if (cul) { const grp = g => [...cul.children].filter(li => { const x = li.querySelector('a'); return x && x.dataset.sec.startsWith(g + ':'); });
     const on = grp(pre), off = grp(other); if (on.length && off.length && on[0].compareDocumentPosition(off[0]) & Node.DOCUMENT_POSITION_PRECEDING) on.forEach(li => cul.insertBefore(li, off[0])); }
   kfGroups(null);
-  if (kfv.classList.contains('on')) history.replaceState(null, '', '#kaempfe-' + j);
+  if (kfv.classList.contains('on')) history.replaceState(null, '', __path('kaempfe-' + j) + location.search);
   if (changed && !opt.silent) kfv.querySelectorAll('.journey .rv').forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add('in'); });
   onScroll();
 }
@@ -3987,7 +4010,7 @@ route(); requestAnimationFrame(() => { placePill(); placeJPill(); });
 
 /* Nach oben: nur auf langen Seiten, erscheint nach gut einem Bildschirm, passt sich hellen und dunklen Flächen an */
 const toTop = document.getElementById('toTop');
-const TOP_VIEWS = ['start','ueber-mich','daad','odyssey','kaempfe','djv'];
+const TOP_VIEWS = ['start','ueber-mich','daad','odyssey','kaempfe','djv','impressum','datenschutz']; /* 25.11.: auch Rechtliches */
 function toTopUpdate() {
   const v = document.querySelector('[data-view].on'); const ok = v && TOP_VIEWS.includes(v.dataset.view);
   toTop.classList.toggle('show', !!ok && scrollY > innerHeight * 1.2);
@@ -4901,4 +4924,23 @@ img.ldg-in{transition:opacity 360ms var(--ease-out,ease-out)}
  /* 25.11. (Israa): DJV-Video mobil quadratisch */
  .djvid-stage video{aspect-ratio:1/1;height:auto;object-fit:cover}
 }</style>
+<script>/* 25.11.: interne Links ohne # öffnen, Zurück-Taste, Seitentitel */
+(function(){
+  var V = window.__VIEWS, T = {"ueber-mich": ["Über mich", "About me"], "daad": ["DAAD Study Guide", "DAAD Study Guide"], "odyssey": ["Odyssey", "Odyssey"], "kaempfe": ["Kämpfe Elektronik", "Kämpfe Elektronik"], "kaempfe-website": ["Kämpfe Elektronik", "Kämpfe Elektronik"], "kaempfe-app": ["Kämpfe Elektronik", "Kämpfe Elektronik"], "djv": ["Deutsch-Jemenitischer Verein", "German-Yemeni Association"], "kontakt": ["Kontakt", "Contact"], "impressum": ["Impressum", "Legal notice"], "datenschutz": ["Datenschutz", "Privacy policy"], "cases": ["Cases", "Cases"]}, BASE = window.LANG === 'en' ? "Israa Al-Doaiss · Senior Product Designer" : document.title;
+  function go(v){ history.pushState(null, '', window.__path(v) + location.search); dispatchEvent(new HashChangeEvent('hashchange')); }
+  document.addEventListener('click', function(e){
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+    var v = a.getAttribute('href').slice(1);
+    if (v !== 'start' && V.indexOf(v) < 0) { var t = v && document.getElementById(v); if (t) { e.preventDefault(); t.scrollIntoView({behavior: 'smooth'}); } return; }
+    e.preventDefault();
+    if (('#' + v) === (window.__vh() || '#start')) { dispatchEvent(new HashChangeEvent('hashchange')); return; }
+    go(v);
+  });
+  addEventListener('popstate', function(){ if (!location.hash) dispatchEvent(new HashChangeEvent('hashchange')); });
+  function title(){ var v = (window.__vh() || '#start').slice(1), en = window.LANG === 'en', t = T[v];
+    document.title = t ? t[en ? 1 : 0] + ' · Israa Al-Doaiss' : BASE; }
+  addEventListener('hashchange', function(){ setTimeout(title, 0); }); title();
+})();
+</script>
 </body></html>
