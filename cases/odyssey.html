@@ -706,11 +706,12 @@ dialog.glb[open]{animation:glbIn 260ms var(--ease-out)}
 .keyfacts dt{color:var(--ody-blau);margin-bottom:8px}
 .keyfacts dd{margin:0;font-size:18px;line-height:28px}
 /* 26.11.: Live-Link am Ende des Ergebnisses (DAAD, DJV) */
-.live-wrap{margin:40px 0 0}
+.live-wrap{margin:32px 0 0}
+.res-text{max-width:640px;margin:48px 0 0;color:var(--braun-g);font-size:18px;line-height:32px}
 .live-link{display:inline-flex;align-items:center;gap:8px;font-size:18px;line-height:28px;color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px}
 .live-link .arr{transition:transform 220ms var(--ease-out)}
 .live-link:hover .arr{transform:translate(2px,-2px)}
-@media (max-width:720px){.live-wrap{margin-top:32px}.live-link{font-size:16px;line-height:24px}}
+@media (max-width:720px){.live-wrap{margin-top:24px}.res-text{margin-top:40px}.live-link{font-size:16px;line-height:24px}}
 @media (max-width:820px){.keyfacts{grid-template-columns:1fr;gap:0}.keyfacts div{padding-block:16px}.back{margin-bottom:56px}}
 .title-img{overflow:hidden;background:var(--sand)}
 .title-img img{width:100%;height:auto;transform:scale(var(--s,1.06));transform-origin:50% 30%}
@@ -2747,12 +2748,13 @@ figure>.cap,.vis .cap,.sc .cap{margin-top:0}
   </div></section>
 
   <section class="band bg-white pad" data-nav="Ergebnis" data-tone="light"><div class="col">
-    <div class="opener rv"><span class="label">Ergebnis</span><h2>Mehr Projekte sichtbar, <span class="kw">mehr Spenden.</span></h2><p>Das Ergebnis: Jedes Projekt, von der Winterhilfe bis zu den Eidgeschenken, hat eine eigene Seite mit Bildern, Videos und direktem Spendenweg. Nach dem Launch stiegen die Spenden um 50 %. Der Verein pflegt die Inhalte selbst im Webflow-Editor, und ich betreue die Seite weiterhin ehrenamtlich.</p></div>
+    <div class="opener rv"><span class="label">Ergebnis</span><h2>Mehr Projekte sichtbar, <span class="kw">mehr Spenden.</span></h2></div>
     <div class="nums rv" role="list">
       <div role="listitem"><strong>+50 %</strong><span>Spenden nach dem Launch</span></div>
       <div role="listitem"><strong>~2×</strong><span>so viele Besucher auf der Website</span></div>
       <div role="listitem"><strong>+30 %</strong><span>mehr Projekte, die online sichtbar sind</span></div>
     </div>
+      <p class="res-text rv">Das Ergebnis: Jedes Projekt, von der Winterhilfe bis zu den Eidgeschenken, hat eine eigene Seite mit Bildern, Videos und direktem Spendenweg. Nach dem Launch stiegen die Spenden um 50 %. Der Verein pflegt die Inhalte selbst im Webflow-Editor, und ich betreue die Seite weiterhin ehrenamtlich.</p>
       <p class="live-wrap rv"><a class="live-link" href="https://djv-hilfe.com/" target="_blank" rel="noopener"><span>Website live ansehen</span><span class="arr">↗</span></a></p>
   </div></section>
   <section class="band bg-hl stage qstage pad" data-tone="dark" data-hide-side><div class="wrap">
