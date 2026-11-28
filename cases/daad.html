@@ -281,6 +281,7 @@ p{margin:0}
 .rise{display:inline-block;opacity:0;transform:translateY(.45em);animation:rise 700ms var(--ease-out) forwards;animation-delay:var(--d,0ms)}
 @keyframes rise{to{opacity:1;transform:none}}
 .sentence>.rise{display:block}
+@media (max-width:560px){h1.sentence{font-size:clamp(36px,10.4vw,46px);text-wrap:pretty}h1.sentence>.rise{display:inline}} /* 28.11. (Israa): Hero-Satz mobil größer (vorher 34px) und als durchlaufender Text, sonst rutscht das Komma nach „designsystem“ allein in eine Zeile bzw. „und“ bleibt allein stehen */
 @media (max-width:560px){.notes{min-height:176px}}
 .show-s{display:none}
 .nav-links a.link{white-space:nowrap}
